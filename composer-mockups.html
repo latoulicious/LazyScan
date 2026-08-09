@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LazyScan — Composer Options</title>
+<style>
+  :root {
+    --bg: #f5f2ec;
+    --surface: #fffaf2;
+    --surface-raised: #f9f6ee;
+    --text: #17201b;
+    --text-secondary: #66746d;
+    --text-muted: #6a6258;
+    --text-label: #43524a;
+    --accent: #0f6f5c;
+    --accent-fg: #0f6f5c;
+    --border: #ded8ce;
+    --border-strong: #c9d2cd;
+    --warn-fg: #9a6b16;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17181b;
+      --surface: #1e2024;
+      --surface-raised: #26282c;
+      --text: #e8e4dd;
+      --text-secondary: #a29a8c;
+      --text-muted: #9a927f;
+      --text-label: #b8b2a8;
+      --accent: #24594e;
+      --accent-fg: #2dd4a8;
+      --border: #31343a;
+      --border-strong: #3d4148;
+      --warn-fg: #e0b65c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17181b;
+    --surface: #1e2024;
+    --surface-raised: #26282c;
+    --text: #e8e4dd;
+    --text-secondary: #a29a8c;
+    --text-muted: #9a927f;
+    --text-label: #b8b2a8;
+    --accent: #24594e;
+    --accent-fg: #2dd4a8;
+    --border: #31343a;
+    --border-strong: #3d4148;
+    --warn-fg: #e0b65c;
+  }
+  :root[data-theme="light"] {
+    --bg: #f5f2ec;
+    --surface: #fffaf2;
+    --surface-raised: #f9f6ee;
+    --text: #17201b;
+    --text-secondary: #66746d;
+    --text-muted: #6a6258;
+    --text-label: #43524a;
+    --accent: #0f6f5c;
+    --accent-fg: #0f6f5c;
+    --border: #ded8ce;
+    --border-strong: #c9d2cd;
+    --warn-fg: #9a6b16;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 20px 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+  header p.eyebrow {
+    margin: 0 0 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-fg);
+  }
+  h1 {
+    margin: 0 0 8px;
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  header > p.lede {
+    margin: 0;
+    color: var(--text-secondary);
+    max-width: 58ch;
+  }
+
+  section {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    padding: 28px;
+  }
+  .option-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .option-tag {
+    flex: none;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 2px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    color: var(--accent-fg);
+  }
+  h2 { margin: 0; font-size: 1.2rem; }
+  .option-cost {
+    margin-left: auto;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  section > p.desc {
+    margin: 4px 0 20px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    max-width: 60ch;
+  }
+
+  .demo-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-label);
+    margin: 0 0 8px;
+  }
+  .pair { display: flex; flex-direction: column; gap: 24px; }
+
+  textarea, .fancy-shell textarea {
+    width: 100%;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 10px 12px;
+    background: var(--surface-raised);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+    min-height: 44px;
+  }
+  textarea:focus-visible {
+    border-color: var(--accent-fg);
+    outline: 3px solid var(--accent-fg);
+  }
+
+  /* Option A shell */
+  .fancy-shell {
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--surface-raised);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .fancy-shell:focus-within {
+    border-color: var(--accent-fg);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-fg) 25%, transparent);
+  }
+  .fancy-shell textarea {
+    display: block;
+    border: 0;
+    background: none;
+    resize: none;
+    overflow: hidden;
+    min-height: 68px;
+  }
+  .fancy-shell textarea:focus-visible { outline: none; }
+  .fancy-foot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px 8px;
+    border-top: 1px solid var(--border);
+  }
+  .fancy-hint { font-size: 0.75rem; color: var(--text-muted); }
+  .fancy-count {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .fancy-count.is-warn { color: var(--warn-fg); font-weight: 700; }
+  .send {
+    border: 0;
+    border-radius: 6px;
+    padding: 6px 16px;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+  }
+  .send:focus-visible { outline: 3px solid var(--accent-fg); outline-offset: 2px; }
+
+  /* Option C rendered comment */
+  .comment-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface-raised);
+    padding: 14px 16px;
+  }
+  .comment-meta { font-size: 0.8rem; color: var(--text-muted); margin: 0 0 6px; }
+  .comment-meta strong { color: var(--text); font-weight: 600; }
+  .comment-body { margin: 0; font-size: 0.95rem; }
+  .comment-body.plain-flat { white-space: normal; }
+  .comment-body.pre-wrap { white-space: pre-wrap; }
+  .comment-body a { color: var(--accent-fg); }
+
+  /* Option B toolbar + preview */
+  .md-toolbar {
+    display: flex;
+    gap: 2px;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .md-btn {
+    border: 0;
+    background: none;
+    border-radius: 5px;
+    min-width: 30px;
+    height: 28px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+  .md-btn:hover { background: var(--surface); color: var(--text); }
+  .md-btn:focus-visible { outline: 2px solid var(--accent-fg); }
+  .md-btn[aria-pressed="true"] { background: var(--surface); color: var(--accent-fg); font-weight: 700; }
+  .md-tabs { margin-left: auto; display: flex; gap: 2px; }
+  .md-pane { padding: 10px 12px; min-height: 96px; font-size: 0.95rem; }
+  .md-pane p { margin: 0 0 10px; }
+  .md-pane p:last-child { margin: 0; }
+  .md-pane blockquote {
+    margin: 0 0 10px;
+    padding: 2px 12px;
+    border-left: 3px solid var(--accent-fg);
+    color: var(--text-secondary);
+  }
+  .md-pane code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85em;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+  .md-pane a { color: var(--accent-fg); }
+  .md-write { display: block; width: 100%; min-height: 96px; border: 0; background: none; resize: none; }
+  .md-write:focus-visible { outline: none; }
+  [hidden] { display: none !important; }
+
+  .verdict {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    padding: 20px 28px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+  .verdict strong { color: var(--text); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">LazyScan · composer mockups</p>
+    <h1>Three ways to dress the text area</h1>
+    <p class="lede">Same comment box from the forum, bio, and comment forms — shown at three
+    investment levels. Type in each one; they're live.</p>
+  </header>
+
+  <section>
+    <div class="option-head">
+      <span class="option-tag">A</span>
+      <h2>Polished input chrome</h2>
+      <span class="option-cost">Size S · CSS + few lines</span>
+    </div>
+    <p class="desc">The box itself gets the upgrade: auto-growing height, soft focus glow,
+    character counter tied to the existing limits, hint text. Content stays plain.</p>
+    <div class="pair">
+      <div>
+        <p class="demo-label">Current (for contrast)</p>
+        <textarea aria-label="Current comment box" placeholder="Write a comment"></textarea>
+      </div>
+      <div>
+        <p class="demo-label">Proposed — type to see the counter &amp; auto-grow</p>
+        <div class="fancy-shell">
+          <textarea id="fancy" aria-label="Proposed comment box" placeholder="Write a comment" maxlength="500"></textarea>
+          <div class="fancy-foot">
+            <span class="fancy-hint">Be kind. Spoilers get tagged.</span>
+            <span class="fancy-count" id="count">0 / 500</span>
+            <button class="send" type="button">Post</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="option-head">
+      <span class="option-tag">C</span>
+      <h2>Line breaks + auto-links</h2>
+      <span class="option-cost">Size S/M · no new deps</span>
+    </div>
+    <p class="desc">No parser, no toolbar — posted text simply keeps its paragraph breaks and
+    URLs become links. Fixes the "wall of text" complaint for a fraction of the markdown cost.</p>
+    <div class="pair">
+      <div>
+        <p class="demo-label">Today — breaks collapse, links dead</p>
+        <div class="comment-card">
+          <p class="comment-meta"><strong>inkwell_reader</strong> · 2 hours ago</p>
+          <p class="comment-body plain-flat">Chapter 55 finally pays off the vol. 3 setup. The panel where Aki turns around?? Cold. Author talked about it here: https://example.com/interview-aki Anyway new favorite arc.</p>
+        </div>
+      </div>
+      <div>
+        <p class="demo-label">Proposed — pre-wrap + linkify</p>
+        <div class="comment-card">
+          <p class="comment-meta"><strong>inkwell_reader</strong> · 2 hours ago</p>
+          <p class="comment-body pre-wrap">Chapter 55 finally pays off the vol. 3 setup.
+
+The panel where Aki turns around?? Cold. Author talked about it here:
+<a href="https://example.com/interview-aki">example.com/interview-aki</a>
+
+Anyway new favorite arc.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="option-head">
+      <span class="option-tag">B</span>
+      <h2>Full markdown</h2>
+      <span class="option-cost">Size M–L · parser + sanitizer deps</span>
+    </div>
+    <p class="desc">Bold, quotes, code, links — with a small toolbar and a write/preview flip.
+    Every place content renders (comments, threads, bios, report snippets) switches to the
+    sanitized markdown renderer. Toggle the tabs below.</p>
+    <div class="fancy-shell">
+      <div class="md-toolbar" role="toolbar" aria-label="Formatting">
+        <button class="md-btn" type="button" title="Bold"><strong>B</strong></button>
+        <button class="md-btn" type="button" title="Italic"><em>I</em></button>
+        <button class="md-btn" type="button" title="Quote">❝</button>
+        <button class="md-btn" type="button" title="Code">&lt;/&gt;</button>
+        <button class="md-btn" type="button" title="Link">🔗</button>
+        <div class="md-tabs">
+          <button class="md-btn" type="button" id="tab-write" aria-pressed="true">Write</button>
+          <button class="md-btn" type="button" id="tab-preview" aria-pressed="false">Preview</button>
+        </div>
+      </div>
+      <textarea class="md-write md-pane" id="md-src" aria-label="Markdown source">**Finally** caught up. The pacing after ch. 40 is a different beast.
+
+> the quiet chapters are the point
+
+Agreed — and the `[dig]` raws linked in the thread make the art shine. More thoughts here: https://example.com/review</textarea>
+      <div class="md-pane" id="md-out" hidden>
+        <p><strong>Finally</strong> caught up. The pacing after ch. 40 is a different beast.</p>
+        <blockquote>the quiet chapters are the point</blockquote>
+        <p>Agreed — and the <code>[dig]</code> raws linked in the thread make the art shine.
+        More thoughts here: <a href="https://example.com/review">example.com/review</a></p>
+      </div>
+      <div class="fancy-foot">
+        <span class="fancy-hint">Markdown supported: bold, italic, quotes, code, links.</span>
+        <button class="send" type="button">Post</button>
+      </div>
+    </div>
+  </section>
+
+  <p class="verdict"><strong>Recommendation:</strong> ship A + C together (one small pass, no new
+  dependencies, no sanitizer risk). Hold B until people actually ask for bold text — it drags in a
+  parser, an XSS-sanitizing step, and a re-render of every content surface.</p>
+</main>
+
+<script>
+  const src = document.getElementById("fancy");
+  const count = document.getElementById("count");
+  const grow = () => {
+    src.style.height = "auto";
+    src.style.height = src.scrollHeight + "px";
+    count.textContent = src.value.length + " / 500";
+    count.classList.toggle("is-warn", src.value.length >= 450);
+  };
+  src.addEventListener("input", grow);
+  grow();
+
+  const tabW = document.getElementById("tab-write");
+  const tabP = document.getElementById("tab-preview");
+  const paneW = document.getElementById("md-src");
+  const paneP = document.getElementById("md-out");
+  const flip = (preview) => {
+    tabW.setAttribute("aria-pressed", String(!preview));
+    tabP.setAttribute("aria-pressed", String(preview));
+    paneW.hidden = preview;
+    paneP.hidden = !preview;
+  };
+  tabW.addEventListener("click", () => flip(false));
+  tabP.addEventListener("click", () => flip(true));
+</script>
+</body>
+</html>
